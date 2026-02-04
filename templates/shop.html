@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzerie Bella</title> <link rel="icon" type="image/png" href="/static/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-orange-50 flex flex-col min-h-screen"> <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto p-4 flex justify-between items-center">
+            <a href="/" class="text-xl md:text-3xl font-bold text-red-600 hover:text-red-700 transition">🍕 Pizzerie Bella</a>
+            
+            <form action="/" method="GET" class="hidden md:flex flex-grow mx-8 max-w-lg">
+                <input type="text" name="search" placeholder="Hledat pizzu..." value="{{ active_search or '' }}" class="w-full border border-gray-300 rounded-l px-4 py-2 focus:outline-none focus:border-red-500">
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-r hover:bg-red-700"><i class="fas fa-search"></i></button>
+            </form>
+
+            <div class="flex items-center gap-3">
+                <a href="/admin" class="text-gray-500 hover:text-red-600 text-sm font-bold flex items-center gap-1"><i class="fas fa-cog"></i> <span class="hidden md:inline">Admin</span></a>
+                <a href="/checkout" class="relative bg-white border border-gray-200 p-2 rounded-full hover:bg-gray-100 transition">
+                    <i class="fas fa-shopping-basket text-lg text-gray-700"></i>
+                    {% if cart_count > 0 %}
+                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-100 bg-white p-2">
+            <div class="container mx-auto">
+                <form action="/" method="GET" class="md:hidden flex mb-3">
+                    <input type="text" name="search" placeholder="Hledat pizzu..." value="{{ active_search or '' }}" class="w-full border border-gray-300 rounded-l px-3 py-2 text-sm">
+                    <button type="submit" class="bg-red-600 text-white px-3 py-2 rounded-r"><i class="fas fa-search"></i></button>
+                </form>
+
+                <div class="flex gap-2 overflow-x-auto pb-2">
+                    <a href="/" class="whitespace-nowrap px-4 py-1 rounded-full text-sm font-bold transition {% if not active_category %}bg-red-600 text-white{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">Vše</a>
+                    {% for cat in categories %}
+                    <a href="/?category={{ cat.name }}" class="whitespace-nowrap px-4 py-1 rounded-full text-sm font-bold transition {% if active_category == cat.name %}bg-red-600 text-white{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% if not active_search and not active_category %}
+    <header class="bg-red-600 text-white text-center py-12 px-4 relative overflow-hidden">
+        <h1 class="text-4xl md:text-6xl font-bold mb-2 drop-shadow-md">Nejlepší pizza ve městě</h1>
+        <p class="text-red-100 text-lg">Rozvoz do 45 minut nebo ZDARMA!</p>
+    </header>
+    {% else %}
+    <div class="container mx-auto p-4">
+        <h2 class="text-xl font-bold text-gray-700">
+            {% if active_search %}Výsledky pro: "{{ active_search }}"{% endif %}
+            {% if active_category %}Kategorie: {{ active_category }}{% endif %}
+        </h2>
+        <a href="/" class="text-sm text-red-500 underline">Zobrazit celé menu</a>
+    </div>
+    {% endif %}
+
+    <div class="container mx-auto p-4 md:p-8 flex-grow">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for p in products %}
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 flex flex-col h-full border border-gray-100">
+                <a href="/product/{{ p.id }}" class="relative group block h-48 overflow-hidden">
+                    <img src="{{ p.img }}" class="w-full h-full object-cover transition duration-300 group-hover:scale-105">
+                    <span class="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">{{ p.category }}</span>
+                </a>
+                
+                <div class="p-4 flex flex-col flex-grow">
+                    <a href="/product/{{ p.id }}"><h3 class="text-xl font-bold text-gray-800 mb-1">{{ p.name }}</h3></a>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2 flex-grow">{{ p.description }}</p>
+                    
+                    <div class="mt-auto mb-4 border-t pt-4 border-gray-100 flex justify-between items-center">
+                        <p class="text-red-600 font-bold text-2xl">{{ p.price }} Kč</p>
+                    </div>
+                    
+                    <a href="/add_to_cart/{{ p.id }}" class="block w-full bg-red-600 hover:bg-red-700 text-white text-center py-2 rounded-lg font-bold transition shadow">
+                        <i class="fas fa-plus mr-1"></i> Přidat do košíku
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-span-4 text-center py-20 text-gray-500">
+                <i class="fas fa-pizza-slice text-4xl mb-4 text-gray-300"></i><br>
+                Litujeme, ale tuto pizzu nemáme.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <footer class="bg-gray-800 text-white text-center py-8 mt-8">
+        <p class="font-bold text-xl">🍕 Pizzerie Bella</p>
+        <p class="text-gray-400 text-sm">Objednávky také na: 123 456 789</p>
+    </footer>
+</body>
+</html>

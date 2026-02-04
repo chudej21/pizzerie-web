@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Přihlášení do administrace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Admin Panel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-800 text-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="bg-gray-700 p-8 rounded-lg shadow-2xl w-full max-w-md border border-gray-600">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-user-shield text-3xl text-white"></i>
+            </div>
+            <h1 class="text-2xl font-bold">Admin Panel</h1>
+            <p class="text-gray-400 text-sm">Zadejte přihlašovací údaje</p>
+        </div>
+
+        {% if error %}
+        <div class="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded mb-4 text-center text-sm">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/login" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm mb-1 text-gray-300">Uživatelské jméno</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-2.5 text-gray-400"><i class="fas fa-user"></i></span>
+                    <input type="text" name="username" required class="w-full bg-gray-800 border border-gray-500 py-2 pl-10 pr-4 rounded text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="admin">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm mb-1 text-gray-300">Heslo</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-2.5 text-gray-400"><i class="fas fa-lock"></i></span>
+                    <input type="password" name="password" required class="w-full bg-gray-800 border border-gray-500 py-2 pl-10 pr-4 rounded text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="••••••••">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded font-bold transition shadow-lg mt-2">
+                Přihlásit se
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <a href="/" class="text-gray-400 hover:text-white text-sm">Zpět na E-shop</a>
+        </div>
+    </div>
+
+</body>
+</html>

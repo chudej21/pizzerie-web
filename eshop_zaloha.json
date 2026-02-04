@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "jmeno": "Radek Chuděj",
+        "cena": 81.0,
+        "status": "Nová"
+    },
+    {
+        "id": 2,
+        "jmeno": "Sandra Lerchová",
+        "cena": 81.0,
+        "status": "Nová"
+    },
+    {
+        "id": 3,
+        "jmeno": "Sandra Lerchová",
+        "cena": 81.0,
+        "status": "Nová"
+    }
+]

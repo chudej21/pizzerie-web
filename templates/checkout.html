@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokladna | Pizzerie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-orange-50">
+
+<div class="container mx-auto p-4 md:p-8 max-w-4xl">
+    <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">🥡 Dokončení objednávky</h1>
+
+    {% if items %}
+    <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg mb-6 border-t-4 border-red-500">
+        <h2 class="text-xl font-bold mb-4 border-b pb-2">Vaše menu</h2>
+        {% for item in items %}
+        <div class="flex justify-between items-center py-3 border-b last:border-0">
+            <div class="flex items-center">
+                <span class="font-bold text-red-600 mr-3">{{ item.qty }}x</span>
+                <div>
+                    <h3 class="font-bold">{{ item.name }}</h3>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center border rounded bg-gray-50">
+                    <a href="/update_cart/{{ item.id }}/minus" class="px-2 text-gray-500 hover:text-red-600 font-bold">-</a>
+                    <a href="/update_cart/{{ item.id }}/plus" class="px-2 text-gray-500 hover:text-green-600 font-bold">+</a>
+                </div>
+                <p class="font-bold w-16 text-right">{{ item.total }} Kč</p>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div class="text-right mt-4 text-xl font-bold text-red-600">
+            Mezisoučet: {{ total_price }} Kč
+        </div>
+    </div>
+
+    <form action="/complete_order" method="POST" class="bg-white p-4 md:p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold mb-4">Kam to vezeme?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <input type="text" name="name" placeholder="Vaše jméno" required class="border p-3 rounded w-full">
+            <input type="text" name="phone" placeholder="Telefon (pro kurýra)" required class="border p-3 rounded w-full">
+            <input type="email" name="email" placeholder="Email (pro potvrzení)" required class="border p-3 rounded w-full md:col-span-2">
+        </div>
+
+        <h2 class="text-xl font-bold mt-6 mb-4">Doručení</h2>
+        <div class="space-y-3">
+            <label class="flex items-center space-x-3 p-4 border rounded cursor-pointer hover:bg-orange-50 bg-white border-gray-200 transition" id="label-rozvoz">
+                <input type="radio" name="shipping" value="rozvoz" checked onchange="toggleShipping('rozvoz')" class="w-5 h-5 text-red-600">
+                <i class="fas fa-car-side text-red-600 text-xl"></i>
+                <div>
+                    <span class="font-bold block">Rozvoz po městě</span>
+                    <span class="text-sm text-gray-500">+29 Kč (do 45 min)</span>
+                </div>
+            </label>
+
+            <label class="flex items-center space-x-3 p-4 border rounded cursor-pointer hover:bg-orange-50 bg-white border-gray-200 transition" id="label-osobni">
+                <input type="radio" name="shipping" value="osobni" onchange="toggleShipping('osobni')" class="w-5 h-5 text-red-600">
+                <i class="fas fa-walking text-green-600 text-xl"></i>
+                <div>
+                    <span class="font-bold block">Osobní odběr</span>
+                    <span class="text-sm text-gray-500">Zdarma (vyzvednutí na pobočce)</span>
+                </div>
+            </label>
+        </div>
+
+        <div id="address-field" class="mt-4 bg-gray-50 p-4 rounded border border-gray-200">
+            <label class="block font-bold mb-1 text-sm uppercase text-gray-500">Adresa doručení:</label>
+            <textarea name="address" placeholder="Ulice, č.p., Patro, Zvonek..." class="border p-2 rounded w-full h-20 bg-white" required></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white text-xl font-bold py-4 px-4 rounded-lg mt-8 shadow-lg transition transform active:scale-95">
+            🍔 Odeslat objednávku
+        </button>
+    </form>
+    {% else %}
+    <div class="text-center py-20 bg-white rounded shadow">
+        <h2 class="text-2xl text-gray-600 mb-4">Máte prázdný košík 🍕</h2>
+        <a href="/" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 font-bold">Vybrat pizzu</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function toggleShipping(method) {
+        const addrField = document.getElementById('address-field');
+        const addrInput = document.querySelector('textarea[name="address"]');
+        const labelRozvoz = document.getElementById('label-rozvoz');
+        const labelOsobni = document.getElementById('label-osobni');
+
+        if (method === 'rozvoz') {
+            addrField.classList.remove('hidden');
+            addrInput.setAttribute('required', 'true');
+            labelRozvoz.classList.add('border-red-500', 'bg-red-50');
+            labelOsobni.classList.remove('border-red-500', 'bg-red-50');
+        } else {
+            addrField.classList.add('hidden');
+            addrInput.removeAttribute('required');
+            labelOsobni.classList.add('border-green-500', 'bg-green-50');
+            labelRozvoz.classList.remove('border-green-500', 'bg-green-50');
+        }
+    }
+    // Spustit při načtení (pro nastavení výchozího stavu)
+    toggleShipping('rozvoz');
+</script>
+</body>
+</html>
